@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Lesson: Scratch Motion Blocks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              alphagen: {
+                purple: "#5E48C4",
+                purpleDark: "#4A3AAD",
+                purpleMid: "#7B6ED4",
+                purplePale: "#EAE7FE",
+                purpleGhost: "#F5F4FF",
+                yellow: "#FFD071",
+                yellowDark: "#E6B84A",
+                nearBlack: "#1A1A1A",
+                lightGrey: "#F2F2F4",
+                cyan: "#59E4FB",
+                cyanDark: "#055F6E",
+                coral: "#ED5661",
+                coralDark: "#993040",
+              },
+              brand: {
+                purple: "#5E48C4",
+                purpleDark: "#4A3AAD",
+                purpleMid: "#7B6ED4",
+                purplePale: "#EAE7FE",
+                purpleGhost: "#F5F4FF",
+                yellow: "#FFD071",
+                yellowDark: "#E6B84A",
+                nearBlack: "#1A1A1A",
+                lightGrey: "#F2F2F4",
+                cyan: "#59E4FB",
+                cyanDark: "#055F6E",
+                coral: "#ED5661",
+                coralDark: "#993040",
+              },
+            },
+            fontFamily: {
+              sans: ["Poppins", "sans-serif"],
+              mono: ["Courier New", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f5f4ff;
+        color: #1a1a1a;
+        font-family: Poppins, sans-serif;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid #ffd071;
+        outline-offset: 2px;
+      }
+      .slide {
+        display: none;
+        min-height: calc(100vh - 145px);
+        padding: 22px 16px 28px;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+      .slide.active {
+        display: flex;
+      }
+      .panel {
+        background: white;
+        border: 1px solid #eae7fe;
+        border-radius: 18px;
+        box-shadow: 0 5px 18px #3225680b;
+      }
+      .eyebrow {
+        color: #5e48c4;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.4px;
+        font-size: 11px;
+        text-align: center;
+      }
+      .title {
+        font-size: clamp(28px, 4vw, 46px);
+        font-weight: 800;
+        line-height: 1.15;
+        text-align: center;
+        margin: 9px 0 12px;
+      }
+      .title span {
+        background: linear-gradient(transparent 62%, #ffd071 62%);
+      }
+      .subtitle {
+        font-size: 14px;
+        color: #68627f;
+        text-align: center;
+        max-width: 650px;
+        line-height: 1.6;
+      }
+      .big-btn {
+        border: 0;
+        background: #5e48c4;
+        color: white;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 11px 18px;
+        cursor: pointer;
+      }
+      .big-btn.yellow {
+        background: #ffd071;
+        color: #28213e;
+      }
+      .slide-heading {
+        font-size: clamp(23px, 3vw, 32px);
+        font-weight: 800;
+        text-align: center;
+        margin: 5px 0;
+      }
+      .hint {
+        font-size: 12px;
+        color: #77718f;
+        text-align: center;
+        margin: 4px 0 16px;
+      }
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 16px;
+        width: 100%;
+        max-width: 1000px;
+        align-items: stretch;
+      }
+      .block-area {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        justify-content: center;
+      }
+      .block-note {
+        font-size: 12px;
+        color: #6f6986;
+        margin: 0 0 2px;
+      }
+      .scratch-block {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+        width: max-content;
+        max-width: 100%;
+        background: #4c97ff;
+        color: white;
+        border-radius: 8px 8px 8px 8px;
+        padding: 8px 11px;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: inset 0 -3px #0000001c;
+        border: 0;
+        cursor: pointer;
+        text-align: left;
+        transition:
+          transform 0.12s,
+          filter 0.12s;
+      }
+      .scratch-block:hover {
+        filter: brightness(1.06);
+        transform: translateY(-1px);
+      }
+      .scratch-block:active {
+        transform: translateY(1px);
+      }
+      .scratch-block .slot {
+        background: white;
+        color: #222;
+        border-radius: 16px;
+        padding: 2px 7px;
+        min-width: 30px;
+        max-width: 86px;
+        text-align: center;
+        border: 0;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .scratch-block .slot.small {
+        max-width: 62px;
+        min-width: 35px;
+      }
+      .block-line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+      }
+      .block-hint {
+        font-size: 11px;
+        color: #7b7590;
+        margin-left: 2px;
+      }
+      .stage-card {
+        padding: 14px;
+        min-width: 0;
+      }
+      .stage-title {
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 9px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .stage {
+        width: 100%;
+        aspect-ratio: 4/3;
+        position: relative;
+        overflow: hidden;
+        border: 2px solid #ded9f6;
+        border-radius: 12px;
+        background-color: #fff;
+        background-image:
+          linear-gradient(#efedf8 1px, transparent 1px),
+          linear-gradient(90deg, #efedf8 1px, transparent 1px);
+        background-size: 10% 10%;
+        touch-action: none;
+      }
+      .axis-x,
+      .axis-y {
+        position: absolute;
+        background: #c7c1e8;
+        pointer-events: none;
+      }
+      .axis-x {
+        height: 1px;
+        width: 100%;
+        left: 0;
+        top: 50%;
+      }
+      .axis-y {
+        width: 1px;
+        height: 100%;
+        left: 50%;
+        top: 0;
+      }
+      .sprite {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        font-size: 45px;
+        line-height: 1;
+        transform: translate(-50%, -50%);
+        transition:
+          left 0.5s ease,
+          top 0.5s ease,
+          transform 0.5s ease;
+        z-index: 3;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+      }
+      .sprite:active {
+        cursor: grabbing;
+      }
+      .target {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 3px dashed #ffad32;
+        border-radius: 50%;
+        display: none;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        pointer-events: none;
+      }
+      .stage-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 11px;
+        color: #77718f;
+        margin-top: 9px;
+        flex-wrap: wrap;
+      }
+      .stage-meta b {
+        color: #5e48c4;
+      }
+      .result {
+        font-size: 12px;
+        line-height: 1.45;
+        background: #f4f2ff;
+        color: #514879;
+        padding: 10px 12px;
+        border-radius: 9px;
+        margin-top: 10px;
+        min-height: 38px;
+      }
+      .stage-tools {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .small-btn {
+        border: 1px solid #ded9f6;
+        background: white;
+        color: #514879;
+        border-radius: 9px;
+        padding: 7px 10px;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .small-btn:hover {
+        background: #f4f1ff;
+      }
+      .cover-art {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        margin: 22px 0;
+      }
+      .cover-cat {
+        font-size: 82px;
+        filter: drop-shadow(0 5px 3px #0001);
+      }
+      .cover-blocks {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transform: rotate(-2deg);
+      }
+      .cover-blocks .scratch-block {
+        cursor: default;
+        font-size: 13px;
+      }
+      .reporters {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .reporter {
+        border-radius: 24px;
+      }
+      .value-pill {
+        font-size: 12px;
+        font-weight: 800;
+        color: #5e48c4;
+        background: #eae7fe;
+        padding: 7px 10px;
+        border-radius: 10px;
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 0 16px 18px;
+      }
+      .nav-btn {
+        border: 0;
+        border-radius: 11px;
+        padding: 10px 16px;
+        font-weight: 800;
+        font-size: 12px;
+        background: #ece9fb;
+        color: #4c437e;
+        cursor: pointer;
+      }
+      .nav-btn.next {
+        background: #5e48c4;
+        color: white;
+      }
+      .nav-btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      .dots {
+        display: flex;
+        gap: 6px;
+      }
+      .dot {
+        height: 8px;
+        width: 8px;
+        border-radius: 50%;
+        background: #d8d3f1;
+      }
+      .dot.active {
+        background: #5e48c4;
+        width: 22px;
+        border-radius: 9px;
+      }
+      .slide-number {
+        font-size: 11px;
+        color: #77718f;
+        font-weight: 700;
+      }
+      .quiz-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+        width: 100%;
+        max-width: 650px;
+        margin: 12px auto;
+      }
+      .quiz-option {
+        width: 100%;
+        max-width: 100%;
+        justify-content: center;
+        border-radius: 8px;
+        padding: 11px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .quiz-option.reporter-option {
+        border-radius: 999px;
+      }
+      .quiz-option.correct {
+        /* background: #eaf8ed; */
+        border-color: #51a86a;
+      }
+      .quiz-option.wrong {
+        /* background: #fff0f1; */
+        border-color: #e36b73;
+      }
+      .input-note {
+        font-size: 11px;
+        color: #77718f;
+      }
+      .param-select {
+        background: #fff;
+        color: #222;
+        border: 0;
+        border-radius: 14px;
+        padding: 2px 6px;
+        font-size: 11px;
+        max-width: 120px;
+      }
+      .touch-tip {
+        text-align: center;
+        font-size: 11px;
+        color: #77718f;
+        margin-top: 8px;
+      }
+      @media (max-width: 720px) {
+        .slide {
+          padding: 16px 10px;
+          min-height: calc(100vh - 145px);
+        }
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+        .stage-card {
+          order: -1;
+        }
+        .stage {
+          max-height: 330px;
+        }
+        .cover-cat {
+          font-size: 64px;
+        }
+        .cover-art {
+          gap: 10px;
+        }
+        .block-area {
+          padding: 12px;
+        }
+        .scratch-block {
+          font-size: 12px;
+        }
+        .header .font-extrabold.text-base {
+          font-size: 13px;
+        }
+        .nav {
+          padding: 0 10px 14px;
+        }
+        .quiz-options {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 430px) {
+        .scratch-block {
+          font-size: 11px;
+          padding: 7px 8px;
+        }
+        .stage-meta {
+          font-size: 10px;
+        }
+        .cover-blocks .scratch-block {
+          font-size: 10px;
+        }
+        .cover-cat {
+          font-size: 52px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="w-full px-4 pt-4">
+      <header
+        class="w-full bg-alphagen-purple px-4 py-3.5 flex flex-wrap items-center justify-between gap-3 text-white shadow-md rounded-2xl"
+      >
+        <div class="flex items-center gap-3">
+          <a
+            href="#"
+            class="bg-alphagen-yellow hover:bg-alphagen-yellowDark text-alphagen-nearBlack px-4 py-2 rounded-xl font-extrabold text-xs md:text-sm shadow-sm transition-all flex items-center gap-2"
+          >
+            <span class="tracking-wide"> ALPHAGEN LEARNING </span>
+          </a>
+
+          <span
+            class="font-extrabold text-base md:text-xl tracking-tight text-white"
+          >
+            Scratch - Game Based Learning
+          </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            onclick="toggleAudio()"
+            id="audio-btn"
+            class="bg-alphagen-purpleDark hover:bg-alphagen-purpleMid text-white p-2 rounded-lg transition-all"
+            title="Toggle Sound"
+          >
+            <i class="fa-solid fa-volume-high text-base" id="sound-icon"> </i>
+          </button>
+        </div>
+      </header>
+    </div>
+    <main>
+      <section id="slide-1" class="slide active">
+        <div class="eyebrow">Scratch • Motion</div>
+        <h1 class="title">Make your sprite <span>move!</span></h1>
+        <p class="subtitle">
+          Click a blue block. Change its numbers. Play with the cat!
+        </p>
+        <div class="cover-art">
+          <div class="cover-blocks">
+            <span class="scratch-block"
+              >move <span class="slot">10</span> steps</span
+            ><span class="scratch-block"
+              >turn ↻ <span class="slot">15</span> degrees</span
+            ><span class="scratch-block"
+              >go to x: <span class="slot">100</span> y:
+              <span class="slot">50</span></span
+            >
+          </div>
+          <div class="cover-cat">🐱</div>
+        </div>
+        <button class="big-btn yellow" onclick="goTo(2)">
+          Let's explore! <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </section>
+      <section id="slide-2" class="slide">
+        <div class="eyebrow">01 • Move and turn</div>
+        <h2 class="slide-heading">Move. Turn. Point.</h2>
+        <p class="hint">Tap a block to run it. Edit the white number first.</p>
+        <div class="workspace">
+          <div class="panel block-area" id="blocks-move">
+            <div class="block-line">
+              <button class="scratch-block" data-action="move">
+                move
+                <input
+                  class="slot"
+                  data-param="steps"
+                  type="number"
+                  value="10"
+                  min="-240"
+                  max="240"
+                />
+                steps
+              </button>
+            </div>
+            <div class="block-line">
+              <button class="scratch-block" data-action="turn">
+                turn ↻
+                <input
+                  class="slot"
+                  data-param="degrees"
+                  type="number"
+                  value="15"
+                  min="-360"
+                  max="360"
+                />
+                degrees</button>
+              
+            </div>
+            <div class="block-line">
+              <button class="scratch-block" data-action="turnleft">
+                turn ↺
+                <input
+                  class="slot"
+                  data-param="degrees"
+                  type="number"
+                  value="15"
+                  min="-360"
+                  max="360"
+                />
+                degrees</button>
+              
+            </div>
+            <div class="block-line">
+              <button class="scratch-block" data-action="point">
+                point in direction
+                <input
+                  class="slot"
+                  data-param="direction"
+                  type="number"
+                  value="90"
+                  min="-180"
+                  max="180"
+                />
+                °
+              </button>
+            </div>
+            
+          </div>
+          <div class="panel stage-card">
+            <div class="stage-title">
+              <span>Scratch stage</span
+              ><span class="slide-number">480 × 360</span>
+            </div>
+            <div class="stage" id="stage-2">
+              <div class="axis-x"></div>
+              <div class="axis-y"></div>
+              <span class="sprite" id="sprite-2" draggable="false">🐱</span
+              ><span class="target" id="target-2"></span>
+            </div>
+            <div class="stage-meta">
+              <span id="coords-2">x: 0, y: 0</span
+              ><span id="dir-2">Direction: 90°</span>
+            </div>
+            
+            <div class="stage-tools">
+              <button class="small-btn" onclick="resetSprite('2')">
+                <i class="fa-solid fa-rotate-left"></i> Reset cat</button>
+              
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="slide-3" class="slide">
+        <div class="eyebrow">02 • Go and glide</div>
+        <h2 class="slide-heading">Jump or glide?</h2>
+        <p class="hint">Change the coordinates, then click the block.</p>
+        <div class="workspace">
+          <div class="panel block-area" id="blocks-position">
+            <div class="block-line">
+              <button class="scratch-block" data-action="random">
+                go to
+                <select class="param-select" data-param="where">
+                  <option>random position</option>
+                  <option>mouse-pointer</option>
+                  <option>center</option>
+                  <option>edge</option>
+                </select>
+              </button>
+            </div>
+            <div class="block-line">
+              <button class="scratch-block" data-action="goto">
+                go to x:
+                <input
+                  class="slot"
+                  data-param="x"
+                  type="number"
+                  value="100"
+                  min="-240"
+                  max="240"
+                />
+                y:
+                <input
+                  class="slot"
+                  data-param="y"
+                  type="number"
+                  value="50"
+                  min="-180"
+                  max="180"
+                />
+              </button>
+            </div>
+            <div class="block-line">
+              <button class="scratch-block" data-action="gliderandom">
+                glide
+                <input
+                  class="slot small"
+                  data-param="seconds"
+                  type="number"
+                  value="1"
+                  min="0.2"
+                  max="5"
+                  step="0.2"
+                />
+                secs to
+                <select class="param-select" data-param="where">
+                  <option>random position</option>
+                  <option>mouse-pointer</option>
+                  <option>center</option>
+                  <option>edge</option>
+                </select>
+              </button>
+            </div>
+            <div class="block-line">
+              <button class="scratch-block" data-action="glide">
+                glide
+                <input
+                  class="slot small"
+                  data-param="seconds"
+                  type="number"
+                  value="1"
+                  min="0.2"
+                  max="5"
+                  step="0.2"
+                />
+                secs to x:
+                <input
+                  class="slot"
+                  data-param="x"
+                  type="number"
+                  value="100"
+                  min="-240"
+                  max="240"
+                />
+                y:
+                <input
+                  class="slot"
+                  data-param="y"
+                  type="number"
+                  value="50"
+                  min="-180"
+                  max="180"
+                />
+              </button>
+            </div>
+          </div>
+          <div class="panel stage-card">
+            <div class="stage-title">
+              <span>Scratch stage</span
+              ><span class="slide-number">Watch the movement</span>
+            </div>
+            <div class="stage" id="stage-3">
+              <div class="axis-x"></div>
+              <div class="axis-y"></div>
+              <span class="sprite" id="sprite-3" draggable="false">🐱</span
+              ><span class="target" id="target-3"></span>
+            </div>
+            <div class="stage-meta">
+              <span id="coords-3">x: 0, y: 0</span
+              ><span id="dir-3">Direction: 90°</span>
+            </div>
+           
+            <div class="stage-tools">
+              <button class="small-btn" onclick="resetSprite('3')">
+                <i class="fa-solid fa-rotate-left"></i> Reset cat</button>
+              
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="slide-4" class="slide">
+        <div class="eyebrow">03 • Change coordinates</div>
+        <h2 class="slide-heading">Control x and y</h2>
+        <p class="hint">
+          Change moves relative to the current spot. Set goes to an exact value.
+        </p>
+        <div class="workspace">
+          <div class="panel block-area" id="blocks-coordinates">
+            <div class="block-line">
+              <button class="scratch-block" data-action="changex">
+                change x by
+                <input
+                  class="slot"
+                  data-param="amount"
+                  type="number"
+                  value="10"
+                  min="-240"
+                  max="240"
+                />
+              </button>
+            </div>
+            <div class="block-line">
+              <button class="scratch-block" data-action="setx">
+                set x to
+                <input
+                  class="slot"
+                  data-param="x"
+                  type="number"
+                  value="100"
+                  min="-240"
+                  max="240"
+                />
+              </button>
+            </div>
+            <div class="block-line">
+              <button class="scratch-block" data-action="changey">
+                change y by
+                <input
+                  class="slot"
+                  data-param="amount"
+                  type="number"
+                  value="10"
+                  min="-180"
+                  max="180"
+                />
+              </button>
+            </div>
+            <div class="block-line">
+              <button class="scratch-block" data-action="sety">
+                set y to
+                <input
+                  class="slot"
+                  data-param="y"
+                  type="number"
+                  value="50"
+                  min="-180"
+                  max="180"
+                />
+              </button>
+            </div>
+            
+          </div>
+          <div class="panel stage-card">
+            <div class="stage-title">
+              <span>Scratch stage</span
+              ><span class="slide-number">x ↔ &nbsp; y ↕</span>
+            </div>
+            <div class="stage" id="stage-4">
+              <div class="axis-x"></div>
+              <div class="axis-y"></div>
+              <span class="sprite" id="sprite-4" draggable="false">🐱</span>
+            </div>
+            <div class="stage-meta">
+              <span id="coords-4">x: 0, y: 0</span
+              ><span id="dir-4">Direction: 90°</span>
+            </div>
+           
+            <div class="stage-tools">
+              <button class="small-btn" onclick="resetSprite('4')">
+                Reset cat</button>
+              
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="slide-5" class="slide">
+        <div class="eyebrow">04 • Reporter blocks</div>
+        <h2 class="slide-heading">Read the sprite's values</h2>
+        <p class="hint">
+          Reporter blocks show information. Drag the cat or click the reporters.
+        </p>
+        <div class="workspace">
+          <div class="panel block-area" id="blocks-reporters">
+            <div class="block-line">
+              <button class="scratch-block reporter" data-action="reportx">
+                (x position)</button
+              ><span class="value-pill" id="value-x">0</span>
+            </div>
+            <div class="block-line">
+              <button class="scratch-block reporter" data-action="reporty">
+                (y position)</button
+              ><span class="value-pill" id="value-y">0</span>
+            </div>
+            
+            
+            
+          </div>
+          <div class="panel stage-card">
+            <div class="stage-title">
+              <span>Scratch stage</span
+              ><span class="slide-number">Live values</span>
+            </div>
+            <div class="stage" id="stage-5">
+              <div class="axis-x"></div>
+              <div class="axis-y"></div>
+              <span class="sprite" id="sprite-5" draggable="false">🐱</span>
+            </div>
+            <div class="stage-meta">
+              <span id="coords-5">x: 0, y: 0</span
+              ><span id="dir-5">Direction: 90°</span>
+            </div>
+            
+            <div class="stage-tools">
+              <button class="small-btn" onclick="resetSprite('5')">
+                Reset cat</button>
+              
+            </div>
+          </div>
+        </div>
+
+      </section>
+      <section id="slide-6" class="slide">
+        <div class="eyebrow">05 • Quick check</div>
+        <h2 class="slide-heading">Test your Motion knowledge</h2>
+        <div class="panel" style="padding: 16px; margin-top: 18px; width: 100%; max-width: 680px; text-align: center;">
+          <strong style="font-size: 16px">Quick check</strong>
+          <p style="font-size: 13px; margin: 6px 0">Which block tells you how far left or right the sprite is?</p>
+          <div class="quiz-options">
+            <button class="quiz-option scratch-block reporter-option" data-answer="x">x position</button>
+            <button class="quiz-option scratch-block reporter-option" data-answer="y">y position</button>
+            <button class="quiz-option scratch-block reporter-option" data-answer="dir">direction</button>
+            <button class="quiz-option scratch-block" data-answer="move">move <span class="slot">10</span> steps</button>
+          </div>
+          <p id="quiz-feedback" style="font-size: 12px; color: #5e48c4; min-height: 18px; margin: 0"></p>
+        </div>
+      </section>
+
+    </main>
+    <div class="nav">
+      <button class="nav-btn" id="btn-prev" onclick="prevSlide()">
+        <i class="fa-solid fa-arrow-left"></i> Back
+      </button>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div class="dots" id="dots"></div>
+        <span class="slide-number" id="current-slide-num">1 / 6</span>
+      </div>
+      <button class="nav-btn next" id="btn-next" onclick="nextSlide()">
+        Next <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+    <script>
+      let currentSlide = 1,
+        totalSlides = 6,
+        audioEnabled = true;
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      function playSessionSound() {
+        if (!audioEnabled) return;
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        const osc = audioCtx.createOscillator(),
+          gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.01,
+          audioCtx.currentTime + 0.05,
+        );
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+      }
+      function toggleAudio() {
+        audioEnabled = !audioEnabled;
+        const icon = document.getElementById("sound-icon"),
+          button = document.getElementById("audio-btn");
+        if (audioEnabled) {
+          icon.className = "fa-solid fa-volume-high text-base";
+          button.title = "Mute Sound";
+          playSessionSound();
+        } else {
+          icon.className = "fa-solid fa-volume-xmark text-base";
+          button.title = "Turn Sound On";
+        }
+      }
+      function updateSlide() {
+        document
+          .querySelectorAll(".slide")
+          .forEach((s, i) =>
+            s.classList.toggle("active", i === currentSlide - 1),
+          );
+        document.getElementById("current-slide-num").innerText =
+          currentSlide + " / " + totalSlides;
+        document.getElementById("btn-prev").style.visibility =
+          currentSlide === 1 ? "hidden" : "visible";
+        document.getElementById("btn-next").innerHTML =
+          currentSlide === totalSlides
+            ? 'Finish <i class="fa-solid fa-rotate-right"></i>'
+            : 'Next <i class="fa-solid fa-arrow-right"></i>';
+        document.getElementById("dots").innerHTML = Array.from(
+          { length: totalSlides },
+          (_, i) =>
+            `<span class="dot ${i === currentSlide - 1 ? "active" : ""}"></span>`,
+        ).join("");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function goTo(n) {
+        currentSlide = n;
+        updateSlide();
+        playSessionSound();
+      }
+      function nextSlide() {
+        goTo(
+          currentSlide === totalSlides
+            ? 1
+            : Math.min(totalSlides, currentSlide + 1),
+        );
+      }
+      function prevSlide() {
+        goTo(Math.max(1, currentSlide - 1));
+      }
+      const state = {};
+      function st(id) {
+        return (
+          state[id] ||
+          (state[id] = {
+            x: 0,
+            y: 0,
+            dir: 90,
+            rotationStyle: "all around",
+            pointerX: 120,
+            pointerY: 60,
+          })
+        );
+      }
+      function clamp(v, min, max) {
+        return Math.max(min, Math.min(max, v));
+      }
+      function px(x) {
+        return clamp(((x + 240) / 480) * 100, 3, 97);
+      }
+      function py(y) {
+        return clamp(((180 - y) / 360) * 100, 4, 96);
+      }
+      function render(id, animate = true) {
+        const s = st(id),
+          sp = document.getElementById("sprite-" + id);
+        if (!sp) return;
+        s.x = clamp(s.x, -230, 230);
+        s.y = clamp(s.y, -165, 165);
+        sp.style.transition = animate
+          ? "left .5s ease,top .5s ease,transform .5s ease"
+          : "none";
+        sp.style.left = px(s.x) + "%";
+        sp.style.top = py(s.y) + "%";
+        let rot = 0,
+          scale = 1;
+        if (s.rotationStyle === "all around") rot = s.dir - 90;
+        else if (s.rotationStyle === "left-right")
+          scale = Math.cos(((s.dir - 90) * Math.PI) / 180) < 0 ? -1 : 1;
+        sp.style.transform = `translate(-50%,-50%) rotate(${rot}deg) scaleX(${scale})`;
+        let c = document.getElementById("coords-" + id);
+        if (c) c.textContent = `x: ${Math.round(s.x)}, y: ${Math.round(s.y)}`;
+        let d = document.getElementById("dir-" + id);
+        if (d) d.textContent = `Direction: ${Math.round(s.dir)}°`;
+        const vx = document.getElementById("value-x"),
+          vy = document.getElementById("value-y"),
+          vd = document.getElementById("value-dir");
+        if (vx) {
+          vx.textContent = Math.round(s.x);
+          vy.textContent = Math.round(s.y);
+          if (vd) vd.textContent = Math.round(s.dir) + "°";
+        }
+      }
+      function getVal(btn, name, def) {
+        const el = btn.querySelector(`[data-param="${name}"]`);
+        return el ? (el.type === "number" ? Number(el.value) : el.value) : def;
+      }
+      function say(id, msg) {
+        const el = document.getElementById("result-" + id);
+        if (el) el.textContent = msg;
+        playSessionSound();
+      }
+      function goToPoint(id, x, y, glide = false, seconds = 1) {
+        const s = st(id),
+          target = document.getElementById("target-" + id);
+        if (target) {
+          target.style.display = "block";
+          target.style.left = px(x) + "%";
+          target.style.top = py(y) + "%";
+          setTimeout(
+            () => (target.style.display = "none"),
+            Math.max(700, seconds * 1000),
+          );
+        }
+        s.x = x;
+        s.y = y;
+        const sp = document.getElementById("sprite-" + id);
+        if (sp && glide)
+          sp.style.transition = `left ${seconds}s linear,top ${seconds}s linear,transform .3s ease`;
+        render(id);
+        if (sp && glide)
+          setTimeout(
+            () =>
+              (sp.style.transition =
+                "left .5s ease,top .5s ease,transform .5s ease"),
+            seconds * 1000,
+          );
+      }
+      function action(btn) {
+        const id = btn.closest(".slide").id.split("-")[1],
+          a = btn.dataset.action,
+          s = st(id);
+        document
+          .querySelectorAll(
+            `#blocks-${id === "2" ? "move" : id === "3" ? "position" : id === "4" ? "coordinates" : "reporters"} .scratch-block`,
+          )
+          .forEach((b) => (b.style.outline = "none"));
+        btn.style.outline = "3px solid #FFD071";
+        const n = (key, def) => getVal(btn, key, def);
+        let msg = "";
+        switch (a) {
+          case "move": {
+            const step = n("steps", 10);
+            const rad = (s.dir * Math.PI) / 180;
+            s.x += Math.sin(rad) * step;
+            s.y += Math.cos(rad) * step;
+            msg = `Moved ${step} steps.`;
+            render(id);
+            break;
+          }
+          case "turn":
+            s.dir = (s.dir + n("degrees", 15)) % 360;
+            msg = "Turned clockwise.";
+            render(id);
+            break;
+          case "turnleft":
+            s.dir = (s.dir - n("degrees", 15)) % 360;
+            msg = "Turned counterclockwise.";
+            render(id);
+            break;
+          case "point":
+            s.dir = n("direction", 90);
+            msg = `Now facing ${s.dir}°.`;
+            render(id);
+            break;
+          case "towards": {
+            let target = n("target", "mouse-pointer"),
+              tx =
+                target === "center"
+                  ? 0
+                  : target === "edge"
+                    ? 210
+                    : target === "mouse-pointer"
+                      ? s.pointerX
+                      : 120,
+              ty =
+                target === "center"
+                  ? 0
+                  : target === "edge"
+                    ? 0
+                    : target === "mouse-pointer"
+                      ? s.pointerY
+                      : 60;
+            s.dir = (Math.atan2(tx - s.x, ty - s.y) * 180) / Math.PI;
+            msg = "The cat points towards " + target + ".";
+            render(id);
+            break;
+          }
+          case "random":
+          case "gliderandom": {
+            let where = n("where", "random position"),
+              x =
+                where === "center"
+                  ? 0
+                  : where === "edge"
+                    ? Math.random() < 0.5
+                      ? -210
+                      : 210
+                    : where === "mouse-pointer"
+                      ? s.pointerX
+                      : Math.round(Math.random() * 400 - 200),
+              y =
+                where === "center"
+                  ? 0
+                  : where === "edge"
+                    ? Math.round(Math.random() * 260 - 130)
+                    : where === "mouse-pointer"
+                      ? s.pointerY
+                      : Math.round(Math.random() * 280 - 140),
+              secs = n("seconds", 1);
+            goToPoint(id, x, y, a === "gliderandom", secs);
+            msg =
+              a === "gliderandom"
+                ? "Gliding to " + where + "."
+                : "Jumped to " + where + ".";
+            break;
+          }
+          case "goto":
+          case "glide": {
+            let x = n("x", 100),
+              y = n("y", 50),
+              secs = n("seconds", 1);
+            goToPoint(id, x, y, a === "glide", secs);
+            msg =
+              (a === "glide" ? "Gliding" : "Jumped") +
+              " to x: " +
+              x +
+              ", y: " +
+              y +
+              ".";
+            break;
+          }
+          case "changex":
+            s.x += n("amount", 10);
+            render(id);
+            msg = "Changed x by " + n("amount", 10) + ".";
+            break;
+          case "setx":
+            s.x = n("x", 100);
+            render(id);
+            msg = "Set x to " + s.x + ".";
+            break;
+          case "changey":
+            s.y += n("amount", 10);
+            render(id);
+            msg = "Changed y by " + n("amount", 10) + ".";
+            break;
+          case "sety":
+            s.y = n("y", 50);
+            render(id);
+            msg = "Set y to " + s.y + ".";
+            break;
+          case "reportx":
+            msg = "x position = " + Math.round(s.x);
+            break;
+          case "reporty":
+            msg = "y position = " + Math.round(s.y);
+            break;
+          case "reportdir":
+            msg = "direction = " + Math.round(s.dir) + "°";
+            break;
+        }
+        say(id, msg);
+      }
+      document
+        .querySelectorAll(".scratch-block[data-action]")
+        .forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            if (e.target.matches("input,select")) return;
+            action(btn);
+          });
+          btn
+            .querySelectorAll("input,select")
+            .forEach((el) =>
+              el.addEventListener("click", (e) => e.stopPropagation()),
+            );
+        });
+      function resetSprite(id) {
+        state[id] = { x: 0, y: 0, dir: 90, rotationStyle: "all around" };
+        render(id, false);
+        say(id, "Cat reset to the centre.");
+      }
+      function readAll(id) {
+        const s = st(id);
+        say(
+          id,
+          `x position: ${Math.round(s.x)} • y position: ${Math.round(s.y)} • direction: ${Math.round(s.dir)}°`,
+        );
+      }
+      function runSequence(id) {
+        const s = st(id);
+        s.x = 0;
+        s.y = 0;
+        s.dir = 90;
+        render(id, false);
+        setTimeout(() => {
+          s.x = 70;
+          render(id);
+          say(id, "Step 1: move forward.");
+        }, 150);
+        setTimeout(() => {
+          s.dir = 45;
+          render(id);
+          say(id, "Step 2: turn.");
+        }, 850);
+        setTimeout(() => {
+          s.x = 120;
+          s.y = 70;
+          render(id);
+          say(id, "Step 3: move to a new position.");
+        }, 1550);
+      }
+      function randomWalk(id) {
+        const x = Math.round(Math.random() * 360 - 180),
+          y = Math.round(Math.random() * 250 - 125);
+        goToPoint(id, x, y, true, 0.8);
+        say(id, "The cat glides to a random spot.");
+      }
+      function makeZigzag(id) {
+        const s = st(id);
+        let i = 0;
+        const pts = [
+          [70, 50],
+          [130, -20],
+          [190, 40],
+          [120, -70],
+          [0, 0],
+        ];
+        function go() {
+          if (i >= pts.length) return;
+          s.x = pts[i][0];
+          s.y = pts[i][1];
+          s.dir = i % 2 ? 225 : 45;
+          render(id);
+          say(id, "Zigzag step " + (i + 1));
+          i++;
+          setTimeout(go, 500);
+        }
+        go();
+      }
+      // Drag the sprite to reposition it; coordinates update immediately.
+      document.querySelectorAll(".stage").forEach((stage) => {
+        const id = stage.id.split("-")[1],
+          sp = document.getElementById("sprite-" + id);
+        let dragging = false;
+        function move(e) {
+          if (!dragging) return;
+          const r = stage.getBoundingClientRect(),
+            x = ((e.clientX - r.left) / r.width) * 480 - 240,
+            y = 180 - ((e.clientY - r.top) / r.height) * 360;
+          st(id).x = clamp(x, -230, 230);
+          st(id).y = clamp(y, -165, 165);
+          render(id, false);
+        }
+        sp.addEventListener("pointerdown", (e) => {
+          dragging = true;
+          sp.setPointerCapture(e.pointerId);
+          e.preventDefault();
+        });
+        sp.addEventListener("pointermove", move);
+        stage.addEventListener("pointermove", (e) => {
+          const r = stage.getBoundingClientRect();
+          st(id).pointerX = ((e.clientX - r.left) / r.width) * 480 - 240;
+          st(id).pointerY = 180 - ((e.clientY - r.top) / r.height) * 360;
+        });
+        sp.addEventListener("pointerup", () => {
+          if (dragging) {
+            dragging = false;
+            say(id, "You moved the cat! Try a Motion block now.");
+          }
+        });
+        sp.addEventListener("pointercancel", () => (dragging = false));
+        stage.addEventListener("pointerdown", (e) => {
+          if (
+            e.target === stage ||
+            e.target.classList.contains("axis-x") ||
+            e.target.classList.contains("axis-y")
+          ) {
+            const r = stage.getBoundingClientRect();
+            st(id).x = ((e.clientX - r.left) / r.width) * 480 - 240;
+            st(id).y = 180 - ((e.clientY - r.top) / r.height) * 360;
+            render(id);
+            say(id, "Moved the cat to the stage position.");
+          }
+        });
+      });
+      document.querySelectorAll(".quiz-option").forEach((b) =>
+        b.addEventListener("click", () => {
+          const all = [...document.querySelectorAll(".quiz-option")];
+          all.forEach((x) => (x.disabled = true));
+          if (b.dataset.answer === "x") {
+            b.classList.add("correct");
+            document.getElementById("quiz-feedback").textContent =
+              "Correct! x position tells left or right.";
+            if (window.confetti)
+              confetti({ particleCount: 65, spread: 55, origin: { y: 0.7 } });
+          } else {
+            b.classList.add("wrong");
+            document
+              .querySelector('[data-answer="x"]')
+              .classList.add("correct");
+            document.getElementById("quiz-feedback").textContent =
+              "Try to remember: x is left and right.";
+          }
+        }),
+      );
+      ["2", "3", "4", "5"].forEach((id) => render(id, false));
+      updateSlide();
+    </script>
+  </body>
+</html>
